@@ -89,3 +89,13 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# ignore data
+models/*
+!models/.gitkeep
+
+data/*
+!data/.gitkeep
+
+
+

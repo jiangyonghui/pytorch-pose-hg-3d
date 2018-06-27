@@ -1,5 +1,10 @@
+import sys,os
+current_dir = os.path.abspath(os.path.dirname(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
+
 import numpy as np
-import ref
+from tools import ref
 
 def getPreds(hm):
   assert len(hm.shape) == 4, 'Input must be a 4-D tensor'

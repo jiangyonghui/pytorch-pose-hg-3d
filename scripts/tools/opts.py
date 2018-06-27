@@ -28,7 +28,6 @@ class opts():
     self.parser.add_argument('-regWeight', type = float, default = 0, help = 'depth regression loss weight')
     self.parser.add_argument('-varWeight', type = float, default = 0, help = 'variance loss weight')
     
-    
   def parse(self):
     self.init()  
     self.opt = self.parser.parse_args()

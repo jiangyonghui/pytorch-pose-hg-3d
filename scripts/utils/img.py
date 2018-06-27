@@ -1,7 +1,12 @@
+import sys,os
+current_dir = os.path.abspath(os.path.dirname(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir) 
+
 import torch
 import numpy as np
 import cv2
-import ref
+from tools import ref
 
 sigma_inp = ref.hmGaussInp
 n = sigma_inp * 6 + 1
@@ -90,6 +95,7 @@ def Crop(img, center, scale, rot, res):
   tmpImg, newImg = img.copy(), np.zeros((res, res, 3), dtype = np.uint8)
 
   scaleFactor = scale / res
+
   if scaleFactor < 2:
     scaleFactor = 1
   else:
@@ -101,7 +107,8 @@ def Crop(img, center, scale, rot, res):
     else:
       tmpImg = cv2.resize(tmpImg, (newSize_wd, newSize_ht)) #TODO
       ht, wd = tmpImg.shape[0], tmpImg.shape[1]
-    
+      
+  
   c, s = 1.0 * center / scaleFactor, scale / scaleFactor
   c[0], c[1] = c[1], c[0]
   ul = Transform((0, 0), c, s, 0, res, invert = True)
@@ -119,12 +126,12 @@ def Crop(img, center, scale, rot, res):
   new_ = [max(0, - ul[0]), min(br[0], ht) - ul[0], max(0, - ul[1]), min(br[1], wd) - ul[1]]
   
   newImg = np.zeros((br[0] - ul[0], br[1] - ul[1], 3), dtype = np.uint8)
-  #print 'new old newshape tmpshape center', new_[0], new_[1], old_[0], old_[1], newImg.shape, tmpImg.shape, center
+  
   try:
     newImg[new_[0]:new_[1], new_[2]:new_[3], :] = tmpImg[old_[0]:old_[1], old_[2]:old_[3], :]
   except:
-    #print 'ERROR: new old newshape tmpshape center', new_[0], new_[1], old_[0], old_[1], newImg.shape, tmpImg.shape, center
     return np.zeros((3, res, res), np.uint8)
+  
   if rot != 0:
     M = cv2.getRotationMatrix2D((newImg.shape[0] / 2, newImg.shape[1] / 2), rot, 1)
     newImg = cv2.warpAffine(newImg, M, (newImg.shape[0], newImg.shape[1]))
@@ -133,8 +140,8 @@ def Crop(img, center, scale, rot, res):
   if scaleFactor < 2:
     newImg = cv2.resize(newImg, (res, res))
   
-  return newImg.transpose(2, 0, 1).astype(np.float32)
-
+  return newImg#.transpose(2, 0, 1).astype(np.float32)
+    
 def Gaussian(sigma):
   if sigma == 7:
     return np.array([0.0529,  0.1197,  0.1954,  0.2301,  0.1954,  0.1197,  0.0529,
