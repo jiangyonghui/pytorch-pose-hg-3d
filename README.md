@@ -26,23 +26,23 @@ We provide example images in `images/`. For testing your own image, it is import
 
 > ### The Bodypart Map is as follows:  
 > POSE_MPII_BODY_PARTS{  
->  {0,  "RAnkle"},  
->  {1,  "RKnee"},  
->  {2,  "RHip"},  
->  {3,  "LHip"},  
->  {4,  "LKnee"},  
->  {5,  "LAnkle"},  
->  {6,  "Pelvis"},  
->  {7,  "Thorax"},  
->  {8,  "Neck"},  
->  {9,  "Head"},  
->  {10, "RWrist"},  
->  {11, "RElbow"},  
->  {12, "RShoulder"},  
->  {13, "LShoulder"},  
->  {14, "LElbow"},  
->  {15, "LWrist"}  
->}   
+>>  {0,  "RAnkle"},  
+>>  {1,  "RKnee"},  
+>>  {2,  "RHip"},  
+>>  {3,  "LHip"},  
+>>  {4,  "LKnee"},  
+>>  {5,  "LAnkle"},  
+>>  {6,  "Pelvis"},  
+>>  {7,  "Thorax"},  
+>>  {8,  "Neck"},  
+>>  {9,  "Head"},  
+>>  {10, "RWrist"},  
+>>  {11, "RElbow"},  
+>>  {12, "RShoulder"},  
+>>  {13, "LShoulder"},  
+>>  {14, "LElbow"},  
+>>  {15, "LWrist"}  
+>>}   
 
 ## Training
 - Prepare the training data:
