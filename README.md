@@ -22,8 +22,9 @@ Contact: [zhouxy2017@gmail.com](mailto:zhouxy2017@gmail.com)
 - Download our pre-trained [model](https://drive.google.com/a/utexas.edu/file/d/1mUEybux3YZ2VhSjs-k4kBadbrT5qx09i/view?usp=sharing) and move it to `models`.
 - Run `python demo.py -demo /path/to/image [-loadModel /path/to/image]`. 
 
-We provide example images in `images/`. For testing your own image, it is important that the person should be at the center of the image and most of the body parts should be within the image. 
-´´´
+We provide example images in `images/`. For testing your own image, it is important that the person should be at the center of the image and most of the body parts should be within the image.   
+
+``` 
 The Bodypart Map for MPII is as follows:  
 POSE_MPII_BODY_PARTS {  
     {0,  "RAnkle"},  
@@ -43,7 +44,7 @@ POSE_MPII_BODY_PARTS {
     {14, "LElbow"},  
     {15, "LWrist"}  
 }   
-´´´
+```
 
 ## Training
 - Prepare the training data:
