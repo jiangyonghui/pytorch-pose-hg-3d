@@ -1,10 +1,7 @@
-import sys,os
-current_dir = os.path.abspath(os.path.dirname(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir) 
+#! /usr/bin/env python
 
 import numpy as np
-from tools import ref
+from pose_3d_ros.tools import ref
 
 def getPreds(hm):
   assert len(hm.shape) == 4, 'Input must be a 4-D tensor'

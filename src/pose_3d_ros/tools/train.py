@@ -1,17 +1,15 @@
-import sys,os
-current_dir = os.path.abspath(os.path.dirname(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir) 
+#! /usr/bin/env python
 
 import torch
-import numpy as np
-from utils.utils import AverageMeter
-from utils.eval import Accuracy, getPreds, MPJPE
-from utils.debugger import Debugger
-from models.layers.FusionCriterion import FusionCriterion
 import cv2
-import ref
+import numpy as np
 from progress.bar import Bar
+from pose_3d_ros.utils.utils import AverageMeter
+from pose_3d_ros.utils.eval import Accuracy, getPreds, MPJPE
+from pose_3d_ros.utils.debugger import Debugger
+from pose_3d_ros.models.layers.FusionCriterion import FusionCriterion
+import ref
+
 
 def step(split, epoch, opt, dataLoader, model, criterion, optimizer = None):
   if split == 'train':

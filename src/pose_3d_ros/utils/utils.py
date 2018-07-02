@@ -1,5 +1,5 @@
 from numpy.random import randn
-import ref
+from pose_3d_ros.tools import ref
 import torch
 import numpy as np
 

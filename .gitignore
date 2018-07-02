@@ -97,5 +97,10 @@ models/*
 data/*
 !data/.gitkeep
 
+debug/*
+!debug/.gitkeep
+
+
+
 
 

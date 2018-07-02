@@ -26,7 +26,8 @@ class PoseExtractor:
       self.image_shape = (256,256,3)
       self.debugger = Debugger()
       self.image_topic = rospy.get_param('~image_topic', '/image_reader/image_raw')
-      self.model_name = rospy.get_param('~pose_model', pkg_path+'/models/pose3d_extractor/hgreg-3d.pth')
+      self.model_name = rospy.get_param('~pose_model', 'hgreg-3d.pth')
+      self.model = {}
       self.save_pose_image = rospy.get_param('~save_pose_image', False)
       self.initModel()
       rospy.loginfo("Waiting for coming image message ...")
@@ -102,7 +103,7 @@ class PoseExtractor:
     # Initialize model
     def initModel(self):
       rospy.loginfo("=====> Loading and Initializing Model")
-      self.model = torch.load(self.model_name).cuda()
+      self.model = torch.load(pkg_path+'/models/'+self.model_name).cuda()
       img = np.zeros((256,256,3))
       input = torch.from_numpy(img.transpose(2, 0, 1)).float() / 256.
       input = input.view(1, input.size(0), input.size(1), input.size(2))

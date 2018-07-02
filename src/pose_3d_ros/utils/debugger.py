@@ -1,12 +1,8 @@
 #!/usr/bin/env python
-import sys,os
-current_dir = os.path.abspath(os.path.dirname(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir) 
 
 import numpy as np
 import cv2
-from tools import ref
+from pose_3d_ros.tools import ref
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d
 from mpl_toolkits.mplot3d import Axes3D

@@ -1,12 +1,9 @@
-import sys,os
-current_dir = os.path.abspath(os.path.dirname(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir) 
+#! /usr/bin/env python
 
 import torch
 import numpy as np
 import cv2
-from tools import ref
+from pose_3d_ros.tools import ref
 
 sigma_inp = ref.hmGaussInp
 n = sigma_inp * 6 + 1

@@ -1,11 +1,11 @@
-import torch.utils.data as data
-import numpy as np
-import ref
 import torch
-from h5py import File
+import torch.utils.data as data
 import cv2
-from utils.utils import Rnd, Flip, ShuffleLR
-from utils.img import Crop, DrawGaussian, Transform3D
+import numpy as np
+from h5py import File
+from pose_3d_ros.tools import ref
+from pose_3d_ros.utils.utils import Rnd, Flip, ShuffleLR
+from pose_3d_ros.utils.img import Crop, DrawGaussian, Transform3D
 
 class H36M(data.Dataset):
   def __init__(self, opt, split):

@@ -1,11 +1,12 @@
+#! /usr/bin/env python
+import torch
 import torch.utils.data as data
 import numpy as np
-import ref
-import torch
-from h5py import File
 import cv2
-from utils.utils import Rnd, Flip, ShuffleLR
-from utils.img import Crop, DrawGaussian, Transform
+from h5py import File
+from pose_3d_ros.tools import ref
+from pose_3d_ros.utils.utils import Rnd, Flip, ShuffleLR
+from pose_3d_ros.utils.img import Crop, DrawGaussian, Transform
 
 class MPII(data.Dataset):
   def __init__(self, opt, split, returnMeta = False):
