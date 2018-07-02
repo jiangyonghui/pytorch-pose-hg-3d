@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 import torch
-from opts import opts
-import ref
-from utils.debugger import Debugger
-from utils.eval import getPreds
 import cv2
 import numpy as np
+from pose_3d_ros.tools.opts import opts
+from pose_3d_ros.tools import ref
+from pose_3d_ros.utils.debugger import Debugger
+from pose_3d_ros.utils.eval import getPreds
 
 def main():
   opt = opts().parse()
   if opt.loadModel != 'none':
     model = torch.load(opt.loadModel).cuda()
   else:
-    model = torch.load('./models/hgreg-3d.pth').cuda()
+    model = torch.load('../models/hgreg-3d.pth').cuda()
   img = cv2.imread(opt.demo)
   input = torch.from_numpy(img.transpose(2, 0, 1)).float() / 256.
   input = input.view(1, input.size(0), input.size(1), input.size(2))

@@ -8,9 +8,9 @@ import rospkg
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
-from utils.debugger import Debugger
-from utils.eval import getPreds
-from utils.img import Crop
+from pose_3d_ros.utils.debugger import Debugger
+from pose_3d_ros.utils.eval import getPreds
+from pose_3d_ros.utils.img import Crop
 
 rospack = rospkg.RosPack()
 pkg_path = rospack.get_path('pose_3d_ros')
