@@ -29,12 +29,14 @@ class PoseExtractor:
       self.model_name = rospy.get_param('~pose_model', 'hgreg-3d.pth')
       self.model = {}
       self.save_pose_image = rospy.get_param('~save_pose_image', False)
+      self.save_pose_file = rospy.get_param('~save_pose_file', False)
       self.initModel()
       rospy.loginfo("Waiting for coming image message ...")
 
       self.pose_2d_pub = rospy.Publisher('~pose_2d', Image, queue_size=1)
       self.pose_3d_pub = rospy.Publisher('~pose_3d', Image, queue_size=1)
       self.image_sub = rospy.Subscriber(self.image_topic, Image, self.callback, queue_size=1)
+      
 
 
     def callback(self, ros_img):
@@ -94,6 +96,12 @@ class PoseExtractor:
         self.debugger.addPoint2D(pose2D, (255, 0, 0), imgId=self.frame_id)
         self.debugger.saveImg(pkg_path+'/scripts/debug/pose/poseImg_'+str(self.frame_id)+'.png', imgId=self.frame_id)
 
+      if self.save_pose_file:
+        file_name = pkg_path + '/pose_file/pose_{:04d}.txt'.format(self.frame_id)
+        with file(file_name, 'w') as outfile:
+          np.savetxt(outfile, pose3D, fmt='%-7.2f')
+      
+      
       # Update frame_id
       self.frame_id += 1
 
