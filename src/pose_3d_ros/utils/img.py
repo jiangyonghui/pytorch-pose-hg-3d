@@ -87,11 +87,11 @@ def Transform3D(pt, center, scale, rot, res, invert = False):
   return new_point
   
 
-def Crop(img, center, scale, rot, res):
+def Crop(img, center, size, rot, res):
   ht, wd = img.shape[0], img.shape[1]
   tmpImg, newImg = img.copy(), np.zeros((res, res, 3), dtype = np.uint8)
 
-  scaleFactor = scale / res
+  scaleFactor = size / res
 
   if scaleFactor < 2:
     scaleFactor = 1
@@ -106,10 +106,10 @@ def Crop(img, center, scale, rot, res):
       ht, wd = tmpImg.shape[0], tmpImg.shape[1]
       
   
-  c, s = 1.0 * center / scaleFactor, scale / scaleFactor
+  c, s = 1.0 * center / scaleFactor, size / scaleFactor
   c[0], c[1] = c[1], c[0]
-  ul = Transform((0, 0), c, s, 0, res, invert = True)
-  br = Transform((res, res), c, s, 0, res, invert = True)
+  ul = Transform((1, 1), c, s, 0, res, invert = True)
+  br = Transform((res+1, res+1), c, s, 0, res, invert = True)
   
   if scaleFactor >= 2:
     br = br - (br - ul - res)
@@ -119,8 +119,10 @@ def Crop(img, center, scale, rot, res):
     ul = ul - pad
     br = br + pad
     
-  old_ = [max(0, ul[0]),   min(br[0], ht),         max(0, ul[1]),   min(br[1], wd)]
-  new_ = [max(0, - ul[0]), min(br[0], ht) - ul[0], max(0, - ul[1]), min(br[1], wd) - ul[1]]
+  old_ = [max(0, ul[0]),  min(br[0], ht),         
+          max(0, ul[1]),  min(br[1], wd)]
+  new_ = [max(0, -ul[0]), min(br[0], ht) - ul[0], 
+          max(0, -ul[1]), min(br[1], wd) - ul[1]]
   
   newImg = np.zeros((br[0] - ul[0], br[1] - ul[1], 3), dtype = np.uint8)
   
@@ -137,7 +139,7 @@ def Crop(img, center, scale, rot, res):
   if scaleFactor < 2:
     newImg = cv2.resize(newImg, (res, res))
   
-  return newImg#.transpose(2, 0, 1).astype(np.float32)
+  return newImg
     
 def Gaussian(sigma):
   if sigma == 7:
