@@ -9,6 +9,8 @@ from pose_3d_ros.utils.debugger import Debugger
 from pose_3d_ros.utils.eval import getPreds
 from pose_3d_ros.utils.img import Crop
 
+import time
+
 def main():
   opt = opts().parse()
   
@@ -16,8 +18,6 @@ def main():
     model = torch.load(opt.loadModel).cuda()
   else:
     model = torch.load('../models/hgreg-3d.pth').cuda()
-    #model = load_lua('../models/hgreg-3d.t7', unknown_classes=True)
-    #print model
     
   img = cv2.imread(opt.demo)
   if img.shape != (256,256,3):

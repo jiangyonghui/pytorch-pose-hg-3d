@@ -87,6 +87,7 @@ class PoseExtractor:
       
       # Estimate fps
       self.total_time += time.time() - t_0
+      rospy.loginfo("Frame Time: %f", time.time() - t_0)
       fps = (self.frame_id+1)/self.total_time
       rospy.loginfo("Average fps: %f", fps)
 
