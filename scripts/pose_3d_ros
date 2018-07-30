@@ -120,7 +120,7 @@ class PoseExtractor:
 
 
 def main():
-  rospy.init_node('pose_3d_extractor')
+  rospy.init_node('pose_3d_ros')
   poseExtractor = PoseExtractor()
   rospy.spin()
   print("Shutting Down 3D Pose Extractor!")
