@@ -21,7 +21,7 @@ catkin_package(
 
 
 # for python scripts
-catkin_install_python(PROGRAMS scripts/pose_3d_ros
+catkin_install_python(PROGRAMS scripts/pose_3d_ros scripts/pose_3d_ros_multi_person
 					  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 					  
 
