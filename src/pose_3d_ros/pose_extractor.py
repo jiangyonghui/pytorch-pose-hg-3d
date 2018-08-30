@@ -21,7 +21,7 @@ class PoseExtractor:
     self.bridge = CvBridge()
     self.image_shape = (256,256,3)
     self.debugger = Debugger()
-    self.person_image_topic = rospy.get_param('~person_image_topic', '/data_manager_multi_person/person_image')
+    self.person_image_topic = rospy.get_param('~person_image_topic', '/data_manager_2d/person_image')
     self.model_name = rospy.get_param('~pose_model', 'hgreg-3d.pth')
     self.model = {}
     self.save_pose_image = False
