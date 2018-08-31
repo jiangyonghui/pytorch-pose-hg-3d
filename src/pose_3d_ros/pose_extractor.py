@@ -6,7 +6,7 @@ import time
 
 import rospy
 import rospkg
-from message_repository.msg import DetectedPerson
+from message_repository.msg import Person, TrackingInfo
 from cv_bridge import CvBridge, CvBridgeError
 
 from utils.debugger import Debugger
@@ -21,7 +21,7 @@ class PoseExtractor:
     self.bridge = CvBridge()
     self.image_shape = (256,256,3)
     self.debugger = Debugger()
-    self.person_image_topic = rospy.get_param('~person_image_topic', '/data_manager_2d/person_image')
+    self.person_image_topic = rospy.get_param('~tracking_info_topic', '/person_tracker/tracking_info')
     self.model_name = rospy.get_param('~pose_model', 'hgreg-3d.pth')
     self.model = {}
     self.save_pose_image = False
@@ -29,15 +29,15 @@ class PoseExtractor:
     self.initModel()
     rospy.loginfo("Waiting for coming image message ...")
 
-    self.pose_3d_pub = rospy.Publisher('~pose_3d', DetectedPerson, queue_size=1)
-    self.person_image_sub = rospy.Subscriber(self.person_image_topic, DetectedPerson, self.callback, queue_size=1)
+    self.pose_3d_pub = rospy.Publisher('~pose_3d', Person, queue_size=1)
+    self.tracking_info_sub = rospy.Subscriber(self.tracking_info_topic, TrackingInfo, self.callback, queue_size=1)
     
 
-  def callback(self, detected_person):
+  def callback(self, tracking_info_msg):
     t_0 = time.time()
-    frame_id = detected_person.frame_id
-    person_id = detected_person.person_id
-    rospy.loginfo("Got person {0} image at frame {1} ".format(person_id, frame_id))
+  
+    rospy.loginfo("------------")
+    rospy.loginfo("Frame ID: {}".format(tracking_info_msg.frame_id))
     
     try:
       person_image = self.bridge.imgmsg_to_cv2(detected_person.person_image)
