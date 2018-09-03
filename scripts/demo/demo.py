@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import rospkg
 import torch
 import cv2
 import glob
@@ -15,7 +16,8 @@ def main():
   if opt.loadModel != 'none':
     model = torch.load(opt.loadModel).cuda()
   else:
-    model = torch.load('../models/hgreg-3d.pth').cuda()
+    model_path = rospkg.RosPack().get_path('pose_3d_ros') + '/models/hgreg-3d.pth'
+    model = torch.load(model_path).cuda()
   
   if img.shape != (256,256,3):
     h, w = img.shape[0], img.shape[1]

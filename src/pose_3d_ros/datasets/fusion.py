@@ -1,6 +1,6 @@
 import torch.utils.data as data
 import numpy as np
-import ref
+from pose_3d_ros.tools import ref
 import torch
 import cv2
 from mpii import MPII

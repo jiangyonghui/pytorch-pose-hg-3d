@@ -1,7 +1,7 @@
 import torch
 from torch.autograd import Function
 import numpy as np
-from pose_3d_ros.tools import ref
+import ref
 
 class FusionCriterion(Function):
   def __init__(self, regWeight, varWeight):

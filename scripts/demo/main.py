@@ -4,15 +4,15 @@ import datetime
 
 import torch
 import torch.utils.data
-from opts import opts
-import ref
-from models.hg_3d import HourglassNet3D
-from utils.utils import adjust_learning_rate
-from datasets.fusion import Fusion
-from datasets.h36m import H36M
-from datasets.mpii import MPII
-from utils.logger import Logger
-from train import train, val
+from pose_3d_ros.tools.opts import opts
+from pose_3d_ros.tools import ref
+from pose_3d_ros.models.hg_3d import HourglassNet3D
+from pose_3d_ros.utils.utils import adjust_learning_rate
+from pose_3d_ros.datasets.fusion import Fusion
+from pose_3d_ros.datasets.h36m import H36M
+from pose_3d_ros.datasets.mpii import MPII
+from pose_3d_ros.utils.logger import Logger
+from pose_3d_ros.tools.train import train, val
 
 def main():
   opt = opts().parse()
