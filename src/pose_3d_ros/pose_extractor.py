@@ -1,7 +1,11 @@
 #!/usr/bin/env python
+#import os
+#os.environ["CUDA_VISIBLE_DEVICES"]="0"
+
 import rospy
 import rospkg
 from geometry_msgs.msg import Point
+from sensor_msgs.msg import Image
 from message_repository.msg import Person, FrameInfo
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -17,7 +21,6 @@ from multiprocessing.dummy import Pool as ThreadPool
 from utils.debugger import Debugger
 from utils.eval import getPreds
 from utils.img import Crop
-
 
 class PoseExtractor:
   def __init__(self, flag_save_pose_image, flag_save_pose_file):
@@ -55,12 +58,6 @@ class PoseExtractor:
         # multithreading
         p = ThreadPool(num_persons)
         p.map(self.poseEstimation, tracked_persons)
-        
-        # multiprocessing
-#        curImage = self.bridge.imgmsg_to_cv2(self.frameInfo.image_frame)
-#        p = ProcessPool(1)
-#        p.map(partial(poseEstimationMp, cur_img=curImage, image_shape=self.image_shape, model=self.model, 
-#                      pose_pub=self.pose_3d_pub), tracked_persons)  
         p.close()
         p.join()                   
       except BaseException as e:
@@ -108,11 +105,11 @@ class PoseExtractor:
       
     rospy.logdebug("got output from model")
 
-    # Get 2D pose from output and converting it to image msg using cv_bridge
+    # Get 2D pose 
     rospy.logdebug("Rendering 2D pose")
     pose2D = getPreds((output[-2].data).cpu().numpy())[0] * 4
 
-    # Get 3D pose and converting it to image msg using cv_bridge
+    # Get 3D pose 
     rospy.logdebug("Rendering 3D pose")
     reg = (output[-1].data).cpu().numpy().reshape(pose2D.shape[0], 1)
     pose3D = np.concatenate([pose2D, (reg + 1) / 2. * 256], axis = 1)
@@ -121,8 +118,8 @@ class PoseExtractor:
     
     for pose in pose3D:
       joint = Point()
-      joint.x = pose[0] + tracked_person.bbox.left
-      joint.y = pose[1] + tracked_person.bbox.top
+      joint.x = pose[0] #+ tracked_person.bbox.left
+      joint.y = pose[1] #+ tracked_person.bbox.top
       joint.z = pose[2]
       tracked_person.person_pose.append(joint)
       
@@ -161,65 +158,4 @@ class PoseExtractor:
     
     
     
-    
-## for multi processing
-def poseEstimationMp(tracked_person, cur_img, image_shape, model, pose_pub):
-  person_id = tracked_person.person_id
-  person_image = cur_img[int(tracked_person.bbox.top):int(tracked_person.bbox.top + tracked_person.bbox.height),
-                         int(tracked_person.bbox.left):int(tracked_person.bbox.left + tracked_person.bbox.width)]
  
-  # Resize input image
-  rospy.logdebug("person image shape: {}".format(person_image.shape))
-  if person_image.shape != image_shape:
-    h, w = person_image.shape[0], person_image.shape[1]
-    center = torch.FloatTensor((w/2, h/2))
-    scale = 1.0 * max(h, w)
-    res = 256
-    input_image = Crop(person_image, center, scale, 0, res)
-  else:
-    input_image = person_image
-
-  # Feed input image to model
-  rospy.loginfo("feeding image to model")
-  input = torch.from_numpy(input_image.transpose(2, 0, 1)).float() / 256.
-  input = input.view(1, input.size(0), input.size(1), input.size(2))
-  input_var = torch.autograd.Variable(input).float().cuda()
-  output = model(input_var)  
-  rospy.logdebug("got output from model")
-
-  # Get 2D pose from output and converting it to image msg using cv_bridge
-  rospy.logdebug("Rendering 2D pose")
-  pose2D = getPreds((output[-2].data).cpu().numpy())[0] * 4
-
-  # Get 3D pose and converting it to image msg using cv_bridge
-  rospy.logdebug("Rendering 3D pose")
-  reg = (output[-1].data).cpu().numpy().reshape(pose2D.shape[0], 1)
-  pose3D = np.concatenate([pose2D, (reg + 1) / 2. * 256], axis = 1)
-  rospy.logdebug("pose 3d shape: {}".format(pose3D.shape))
-  
-  for pose in pose3D:
-    joint = Point()
-    joint.x = pose[0] + tracked_person.bbox.left
-    joint.y = pose[1] + tracked_person.bbox.top
-    joint.z = pose[2]
-    tracked_person.person_pose.append(joint)
-    
-  pose_pub.publish(tracked_person)
-  
-  rospy.logdebug("3D pose published")
-  rospy.logdebug("pose3D: \n {}".format(pose3D))
-  rospy.loginfo("Person {} processing finished".format(person_id))
-  
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
