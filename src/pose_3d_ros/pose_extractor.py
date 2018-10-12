@@ -40,8 +40,61 @@ class PoseExtractor:
 
     self.pose_3d_pub = rospy.Publisher('~pose_3d', Person, queue_size=1)
     self.tracking_info_sub = rospy.Subscriber(self.tracking_info_topic, FrameInfo, self.trackingInfoCallback, queue_size=1)
+    #self.person_image_sub = rospy.Subscriber('/image_reader/image_raw', Image, self.personImageCallback, queue_size=1)
     
+  def personImageCallback(self, person_img_msg):
+    begin = time.time()
+    
+    person = Person()
+    person.person_id = 0
+    person.frame_id = person_img_msg.header.seq
+    
+    try:
+      person_image = self.bridge.imgmsg_to_cv2(person_img_msg)
+    except CvBridgeError as e:
+      rospy.logerr(e)
+    
+    if person_image.shape != self.image_shape:
+      h, w = person_image.shape[0], person_image.shape[1]
+      center = torch.FloatTensor((w/2, h/2))
+      scale = 1.0 * max(h, w)
+      res = 256
+      input_image = Crop(person_image, center, scale, 0, res)
+    else:
+      input_image = person_image
 
+    # Feed input image to model
+    rospy.loginfo("feeding image to model")
+    input = torch.from_numpy(input_image.transpose(2, 0, 1)).float() / 256.
+    input = input.view(1, input.size(0), input.size(1), input.size(2))
+    input_var = torch.autograd.Variable(input).float().cuda()
+    output = self.model(input_var)
+    rospy.logdebug("got output from model")
+
+    # Get 2D pose 
+    rospy.logdebug("Rendering 2D pose")
+    pose2D = getPreds((output[-2].data).cpu().numpy())[0] * 4
+
+    # Get 3D pose 
+    rospy.logdebug("Rendering 3D pose")
+    reg = (output[-1].data).cpu().numpy().reshape(pose2D.shape[0], 1)
+    pose3D = np.concatenate([pose2D, (reg + 1) / 2. * 256], axis = 1)
+    rospy.logdebug("pose 3d shape: {}".format(pose3D.shape))
+    
+    for pose in pose3D:
+      joint = Point()
+      joint.x = pose[0] #+ tracked_person.bbox.left
+      joint.y = pose[1] #+ tracked_person.bbox.top
+      joint.z = pose[2]
+      person.person_pose.append(joint)
+      
+    self.pose_3d_pub.publish(person)
+    
+    rospy.logdebug("Publishing 3D Pose")
+    rospy.logdebug("pose3D: \n {}".format(pose3D))
+    rospy.logdebug("FPS: {}".format(1 / (time.time() - begin)))
+     
+  
   def trackingInfoCallback(self, tracking_info_msg):
     begin = time.time()
     self.frameInfo = tracking_info_msg
@@ -78,7 +131,10 @@ class PoseExtractor:
                               int(tracked_person.bbox.left):int(tracked_person.bbox.left + tracked_person.bbox.width)]
     except CvBridgeError as e:
       rospy.logerr(e)
-
+    
+#    if person_id == 1:
+    cv2.imwrite('./result_0/person_fr_{}.png'.format(tracked_person.frame_id), person_image)
+        
     # Resize input image
     rospy.logdebug("person image shape: {}".format(person_image.shape))
     if person_image.shape != self.image_shape:
