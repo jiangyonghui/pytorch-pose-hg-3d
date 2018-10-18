@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-#import os
-#os.environ["CUDA_VISIBLE_DEVICES"]="0"
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 import rospy
 import rospkg
@@ -34,9 +34,11 @@ class PoseExtractor:
     self.model = {}
     self.save_pose_image = flag_save_pose_image
     self.save_pose_file = flag_save_pose_file
+    self.publish_person = False
     self.initModel()
 
-    self.pose_3d_pub = rospy.Publisher('~pose_3d', FrameInfo, queue_size=1)
+    self.frame_info_pub = rospy.Publisher('~frame_info', FrameInfo, queue_size=1)
+    self.person_pub = rospy.Publisher('~person', Person, queue_size=1)
     self.tracking_info_sub = rospy.Subscriber(self.tracking_info_topic, FrameInfo, self.trackingInfoCallback, queue_size=1)
     
   
@@ -61,7 +63,7 @@ class PoseExtractor:
         p.map(self.poseEstimation, tracked_persons)
         p.close()
         p.join()   
-        self.pose_3d_pub.publish(self.frameInfo)
+        self.frame_info_pub.publish(self.frameInfo)
         self.frameInfo = FrameInfo()
         
         if tracking_info_msg.last_frame:
@@ -75,7 +77,7 @@ class PoseExtractor:
       
       if tracking_info_msg.last_frame:
         rospy.loginfo('Last frame in the video!')
-        self.pose_3d_pub.publish(self.frameInfo)
+        self.frame_info_pub.publish(self.frameInfo)
             
     rospy.loginfo("FPS: {}".format(1 / (time.time() - begin)))
     
@@ -134,6 +136,10 @@ class PoseExtractor:
       joint.z = pose[2]
       tracked_person.person_pose.append(joint)
     
+    # publish person
+    if self.publish_person:
+      self.person_pub.publish(tracked_person)
+       
     self.lock.acquire()
     try:
       self.frameInfo.persons.append(tracked_person)
