@@ -50,19 +50,22 @@ class PoseExtractor:
     self.frameInfo.last_frame = tracking_info_msg.last_frame
     rospy.loginfo("Frame ID: {}".format(self.frameInfo.frame_id))
     
-    tracked_persons = tracking_info_msg.persons
-    numPersons = len(tracked_persons)
+    persons = tracking_info_msg.persons
+    numPersons = len(persons)
 
     if numPersons != 0:
-      for person in tracked_persons:
+      for person in persons:
         rospy.loginfo("Person {} is detected".format(person.person_id))
       
       try:
         # multithreading
         #p = ThreadPool(numPersons)
-        #p.map(self.poseEstimation, tracked_persons)
+        #p.map(self.poseEstimation, persons)
         #p.close()
-        #p.join()   
+        #p.join()  
+        for person in persons:
+          self.poseEstimation(person)  
+
         self.frame_info_pub.publish(self.frameInfo)
         self.frameInfo = FrameInfo()
         
@@ -87,9 +90,8 @@ class PoseExtractor:
     
     try:
       curImage = self.bridge.imgmsg_to_cv2(self.frameInfo.image_frame)
-      curImageResize = cv2.resize(curImage, None, fx=0.5, fy=0.5)
-      person_image = curImageResize[int(tracked_person.bbox.top):int(tracked_person.bbox.top + tracked_person.bbox.height),
-                                    int(tracked_person.bbox.left):int(tracked_person.bbox.left + tracked_person.bbox.width)]
+      person_image = curImage[int(tracked_person.bbox.top):int(tracked_person.bbox.top + tracked_person.bbox.height),
+                              int(tracked_person.bbox.left):int(tracked_person.bbox.left + tracked_person.bbox.width)]
     except CvBridgeError as e:
       rospy.logerr(e)
         
