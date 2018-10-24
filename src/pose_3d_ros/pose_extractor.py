@@ -50,19 +50,22 @@ class PoseExtractor:
     self.frameInfo.last_frame = tracking_info_msg.last_frame
     rospy.loginfo("Frame ID: {}".format(self.frameInfo.frame_id))
     
-    tracked_persons = tracking_info_msg.persons
-    numPersons = len(tracked_persons)
+    persons = tracking_info_msg.persons
+    numPersons = len(persons)
 
     if numPersons != 0:
-      for person in tracked_persons:
+      for person in persons:
         rospy.loginfo("Person {} is detected".format(person.person_id))
       
       try:
-        # multithreading
-        p = ThreadPool(numPersons)
-        p.map(self.poseEstimation, tracked_persons)
-        p.close()
-        p.join()   
+        # multi-threading for publishing single person
+        #p = ThreadPool(numPersons)
+        #p.map(self.poseEstimation, persons)
+        #p.close()
+        
+        for person in persons:
+          self.poseEstimation(person)
+          
         self.frame_info_pub.publish(self.frameInfo)
         self.frameInfo = FrameInfo()
         
@@ -74,10 +77,10 @@ class PoseExtractor:
 
     else:
       rospy.logwarn("No person is detected!")
-      
+      self.frame_info_pub.publish(self.frameInfo)
+       
       if tracking_info_msg.last_frame:
         rospy.loginfo('Last frame in the video!')
-        self.frame_info_pub.publish(self.frameInfo)
             
     rospy.loginfo("FPS: {}".format(1 / (time.time() - begin)))
     
